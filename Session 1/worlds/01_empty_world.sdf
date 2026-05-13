@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+<!--
+  ============================================================
+  WORLD 01 — Empty World (Bare Minimum)
+  ============================================================
+  This is the simplest possible Gazebo Sim 8 world.
+  It contains only what is absolutely required to run:
+    - The SDF and world declaration
+    - Physics plugin       → simulates forces, gravity, collisions
+    - UserCommands plugin  → allows interaction via GUI and CLI
+    - SceneBroadcaster     → sends the scene to the GUI to render it
+
+  Without these three plugins, the world either won't render
+  or won't simulate properly.
+
+  Run with:
+    gz sim 01_empty_world.sdf
+  ============================================================
+-->
+<sdf version="1.10">
+  <world name="empty_world">
+
+    <!-- ======================================================
+         PHYSICS
+         Controls the simulation engine behavior.
+         - max_step_size: how much simulated time passes per step
+           Smaller = more accurate, but more CPU intensive
+           Default good value: 0.001 (1 millisecond)
+         - real_time_factor: ratio of sim time to real time
+           1.0 = real time, 2.0 = twice as fast as real time
+    ====================================================== -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- ======================================================
+         REQUIRED SYSTEM PLUGINS
+         These three plugins are needed in almost every world.
+         Think of them as the "operating system" of your world.
+    ====================================================== -->
+
+    <!-- Simulates physics: gravity, collisions, forces -->
+    <plugin
+      filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+
+    <!-- Allows interaction: move models, delete, create via GUI/CLI -->
+    <plugin
+      filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+
+    <!-- Sends the scene to the GUI renderer so you can see it -->
+    <plugin
+      filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+
+    <!-- ======================================================
+         NOTICE
+         This world has no lights, no ground, and no objects.
+         When you run it, you will see a black/dark viewport.
+         That is expected — we will add more in the next files.
+
+         Try running this and using the CLI:
+           gz topic -l
+           gz topic -e -t /world/empty_world/stats
+    ====================================================== -->
+
+  </world>
+</sdf>
