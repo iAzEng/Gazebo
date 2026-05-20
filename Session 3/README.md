@@ -3,11 +3,10 @@
 By the end of this session you will be able to:
 
 - [ ] Browse and find worlds and models on Gazebo Fuel
-- [ ] Download a model from Gazebo Fuel using the CLI
-- [ ] Download a world from Gazebo Fuel using the CLI
-- [ ] Place downloaded assets in the correct PX4 directories
+- [ ] Download a model or world from Gazebo Fuel using the CLI
+- [ ] Correctly place downloaded assets in the PX4 directories
 - [ ] Reference a Fuel model inside a world SDF using `<include>`
-- [ ] Run a custom Fuel world with the X500 drone using PX4
+- [ ] Run a custom Fuel world with the X500 drone using PX4 standalone mode
 - [ ] Debug common path and resource issues
 
 ---
@@ -20,8 +19,8 @@ By the end of this session you will be able to:
 
 | Type | What it is | Example |
 |------|-----------|---------|
-| **Model** | A single 3D object (building, tree, vehicle, obstacle) | Ambulance, Gas Station, Tree |
-| **World** | A complete SDF world file (may include models inside) | Depot, Warehouse, Baylands |
+| **Model** | A single 3D object (building, vehicle, obstacle) | Ambulance, Gas Station, Tree |
+| **World** | A complete SDF world file (may include models) | Depot, Warehouse, Baylands |
 
 ### 2. Two Ways to Use Fuel Assets
 
@@ -55,16 +54,16 @@ Download with `gz fuel download`, copy to PX4 models directory, reference by fol
 ```
 /home/az/PX4-Autopilot/Tools/simulation/gz/
 ├── worlds/        ← world .sdf files go here
-└── models/        ← model folders go here
+└── models/        ← each model is a subfolder here
 ```
 
-Each model must be a folder following this structure:
+Each model must be a folder with this structure:
 ```
 models/
-└── ModelName/            ← folder name must match the uri
-    ├── model.config      ← required metadata file
+└── ModelName/            ← folder name must match the <uri>
+    ├── model.config      ← required metadata
     ├── model.sdf         ← the model definition
-    └── meshes/           ← optional mesh files
+    └── meshes/           ← optional mesh files (.dae, .stl)
 ```
 
 The `model.config` file (required by Gazebo):
@@ -90,11 +89,15 @@ gz fuel download -u https://fuel.gazebosim.org/1.0/OWNER/worlds/NAME -v 4
 
 `-v 4` gives verbose output. Assets download to:
 ```
-~/.gz/fuel/fuel.gazebosim.org/OWNER/models/NAME/1/
-~/.gz/fuel/fuel.gazebosim.org/OWNER/worlds/NAME/1/
+~/.gz/fuel/fuel.gazebosim.org/owner_lowercase/models/NAME/VERSION/
+~/.gz/fuel/fuel.gazebosim.org/owner_lowercase/worlds/NAME/VERSION/
 ```
 
-Note the `/1/` at the end — that is the version folder. When copying to PX4, copy the **contents** of `/1/`, not the `/1/` folder itself.
+> ⚠️ **Important:** The owner name in the cache path is always **lowercase**, regardless of how it appears in the URL. Also, Fuel assigns a version number to every asset (e.g. `/4/`). Always check the actual version number before copying:
+> ```bash
+> ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/ambulance/
+> # might show: 4   (not necessarily 1)
+> ```
 
 ### 5. GZ_SIM_RESOURCE_PATH
 
@@ -109,6 +112,12 @@ Add permanently to `~/.bashrc` if not done already:
 echo 'export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models' >> ~/.bashrc
 source ~/.bashrc
 ```
+
+### 6. A Note on PX4_GZ_WORLD
+
+`PX4_GZ_WORLD` is an environment variable that sets the world for PX4's **normal make mode** (e.g. `PX4_GZ_WORLD=baylands make px4_sitl gz_x500`). It only works with worlds that are registered inside PX4's CMakeLists and stored in the PX4 worlds directory.
+
+For external Fuel worlds we always use **standalone mode** (`gz sim` + `PX4_GZ_STANDALONE=1`), which bypasses this limitation entirely. This is the correct approach for custom worlds in this and future sessions.
 
 ---
 
@@ -135,10 +144,7 @@ gaz/
 
 Go to [https://app.gazebosim.org/fuel/models](https://app.gazebosim.org/fuel/models) and browse.
 
-We will use the **Ambulance** model by OpenRobotics:
-`https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ambulance`
-
-Note the URL structure: `fuel.gazebosim.org/1.0/<owner>/models/<name>`
+We will use the **Ambulance** model by OpenRobotics as our example.
 
 #### Step 2 — Download the model
 
@@ -146,22 +152,38 @@ Note the URL structure: `fuel.gazebosim.org/1.0/<owner>/models/<name>`
 gz fuel download -u https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ambulance -v 4
 ```
 
-Verify it downloaded:
-```bash
-ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/Ambulance/1/
-```
-
-#### Step 3 — Copy to PX4 models directory
+Now check what version was downloaded (the folder name is the version number):
 
 ```bash
-cp -r ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/Ambulance/1 \
-      /home/az/PX4-Autopilot/Tools/simulation/gz/models/Ambulance
+ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/ambulance/
 ```
 
-Verify structure:
+Note the version number shown (e.g. `4`), then verify its contents:
+
+```bash
+ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/ambulance/4/
+# Expected: materials  meshes  model.config  model.sdf  thumbnails
+```
+
+#### Step 3 — Create the destination folder and copy
+
+First create the destination folder, then copy the model contents into it:
+
+```bash
+mkdir -p /home/az/PX4-Autopilot/Tools/simulation/gz/models/Ambulance
+```
+
+```bash
+cp -r ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/ambulance/4/. \
+      /home/az/PX4-Autopilot/Tools/simulation/gz/models/Ambulance/
+```
+
+> The `/4/.` at the end means "copy the **contents** of the version folder", not the folder itself. Replace `4` with your actual version number if different.
+
+Verify the result:
 ```bash
 ls /home/az/PX4-Autopilot/Tools/simulation/gz/models/Ambulance/
-# Expected: model.config  model.sdf  (and possibly meshes/)
+# Expected: materials  meshes  model.config  model.sdf  thumbnails
 ```
 
 #### Step 4 — Inspect the model SDF
@@ -172,19 +194,25 @@ cat /home/az/PX4-Autopilot/Tools/simulation/gz/models/Ambulance/model.sdf
 
 Identify the links, visuals, and collision shapes — same structure as Session 1.
 
-#### Step 5 — Run the example world
+#### Step 5 — Launch Gazebo with the example world
 
+> ⚠️ **Order matters:** Always start Gazebo first and wait until the world is fully loaded before running PX4. Starting PX4 too early causes a timeout error.
+
+**Terminal 1 — Start Gazebo and wait for it to fully load:**
 ```bash
-# Terminal 1
 export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
 gz sim /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
+```
 
-# Terminal 2
+Wait until the Gazebo GUI appears and the world is rendered. Then press ▶️ **Play**.
+
+**Terminal 2 — Start PX4 after Gazebo is fully loaded:**
+```bash
 cd ~/PX4-Autopilot
 PX4_GZ_STANDALONE=1 make px4_sitl gz_x500
 ```
 
-The drone spawns in the world alongside the Ambulance model.
+The drone spawns in the world alongside the Ambulance model. Connect QGroundControl and verify.
 
 ---
 
@@ -202,35 +230,44 @@ We will use the **Depot** world by OpenRobotics.
 gz fuel download -u https://fuel.gazebosim.org/1.0/OpenRobotics/worlds/Depot -v 4
 ```
 
-#### Step 3 — Inspect it
-
+Check the version number:
 ```bash
-ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/Depot/1/
-cat ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/Depot/1/*.sdf
+ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/
 ```
 
-Check what models it includes:
+#### Step 3 — Inspect the world SDF
+
 ```bash
-grep -i "fuel.gazebosim.org" ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/Depot/1/*.sdf
+ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/
+cat ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/*.sdf
 ```
 
-Any `<include>` with a Fuel URI will auto-download on first run.
+Check which models it includes from Fuel:
+```bash
+grep -i "fuel.gazebosim.org" ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/*.sdf
+```
 
-#### Step 4 — Copy to PX4 worlds directory
+Any `<uri>` pointing to `fuel.gazebosim.org` will auto-download on first run if you have internet.
+
+#### Step 4 — Copy the world SDF to PX4
 
 ```bash
-cp ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/Depot/1/depot.sdf \
+cp ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/*.sdf \
    /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/depot.sdf
 ```
 
 #### Step 5 — Run with PX4
 
+**Terminal 1 — Start Gazebo and wait for it to fully load:**
 ```bash
-# Terminal 1
 export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
 gz sim /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/depot.sdf
+```
 
-# Terminal 2
+Wait until the GUI appears and the world is rendered. Then press ▶️ **Play**.
+
+**Terminal 2 — Start PX4 after Gazebo is fully loaded:**
+```bash
 cd ~/PX4-Autopilot
 PX4_GZ_STANDALONE=1 make px4_sitl gz_x500
 ```
@@ -239,33 +276,30 @@ PX4_GZ_STANDALONE=1 make px4_sitl gz_x500
 
 ## ❓ Common Issues & Debugging
 
+**`ERROR [init] Timed out waiting for Gazebo world`**
+- You ran PX4 before Gazebo finished loading
+- Always wait for the Gazebo GUI to fully appear and press ▶️ Play before running Terminal 2
+
 **`Unable to find uri[model://ModelName]`**
 - Model is not in `GZ_SIM_RESOURCE_PATH`
 - Run `echo $GZ_SIM_RESOURCE_PATH` to verify it is set
-- Folder name must exactly match the name in `<uri>` — case-sensitive
+- Folder name must exactly match the `<uri>` — case-sensitive
 
-**Model is grey box or invisible:**
-- Missing mesh files — check if `meshes/` folder exists in the model
-- The SDF may reference a `.dae` or `.stl` that wasn't downloaded
+**`Could not resolve file [ambulance.png]` or similar:**
+- The model has material/texture files that reference relative paths
+- Make sure you copied the full contents of the version folder including `materials/` and `meshes/`
 
-**Copied the wrong folder level:**
-- Fuel downloads put assets inside a version subfolder `/1/`
-- Copy the contents of `/1/` not `/1/` itself:
-  ```bash
-  # Correct:
-  cp -r ~/.gz/fuel/.../ModelName/1 /path/to/models/ModelName
-  # Wrong:
-  cp -r ~/.gz/fuel/.../ModelName /path/to/models/
-  ```
+**Downloaded version number is not `/1/`:**
+- The Fuel cache uses the model's actual version number (could be `/2/`, `/4/`, etc.)
+- Always run `ls ~/.gz/fuel/.../models/modelname/` first to find the correct number
+
+**Wrong folder structure after copying:**
+- If you see a version number subfolder (e.g. `Ambulance/4/model.sdf`) you copied the folder instead of its contents
+- Fix: `cp -r ~/.gz/fuel/.../ambulance/4/. /path/to/models/Ambulance/` (note the `/.` at the end)
 
 **World runs but is very heavy / low FPS:**
-- Open the world SDF and remove decorative `<include>` models (trees, props)
-- Comment out non-essential plugins
-- Keep only: Physics, UserCommands, SceneBroadcaster
-
-**Fuel world has internal model URIs that fail:**
-- Some worlds reference their own models by `model://` — those models must also be in `GZ_SIM_RESOURCE_PATH`
-- Download each referenced model and copy to the PX4 models directory
+- Open the world SDF and remove decorative `<include>` model blocks
+- Keep only: Physics, UserCommands, SceneBroadcaster plugins
 
 ---
 
