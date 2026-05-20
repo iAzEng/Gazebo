@@ -200,7 +200,7 @@ Identify the links, visuals, and collision shapes — same structure as Session 
 
 **Terminal 1 — Start Gazebo and wait for it to fully load:**
 ```bash
-export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
+export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models:/home/az/PX4-Autopilot/Tools/simulation/gz/models/Ambulance/materials/textures
 gz sim /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
 ```
 
