@@ -286,9 +286,10 @@ bash scripts/run_worlds.sh
 
 ## ❓ Common Issues & Debugging
 
-**`ninja: error: unknown target 'gz_x500'`**
+**`ninja: error: unknown target 'gz_x500' (note that "make distclean" will remove all files in gz folder including models and worlds)`**
 ```bash
 make distclean
+git submodule update --init --recursive
 make px4_sitl gz_x500
 ```
 
