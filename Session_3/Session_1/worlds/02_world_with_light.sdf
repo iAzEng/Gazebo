@@ -1,0 +1,171 @@
+<?xml version="1.0" ?>
+<!--
+  ============================================================
+  WORLD 02 — World with Light and Ground
+  ============================================================
+  Building on World 01, we now add:
+    - A directional light (the sun)
+    - A ground plane so objects don't fall forever
+
+  KEY LEARNING:
+    - The <light> tag and its properties
+    - The difference between <visual> and <collision>
+    - Why static models don't need <inertial>
+    - How pose works: X Y Z Roll Pitch Yaw (in radians)
+
+  Run with:
+    gz sim 02_world_with_light.sdf
+
+  Try in another terminal while running:
+    gz topic -l
+    gz topic -e -t /world/world_with_light/stats
+  ============================================================
+-->
+<sdf version="1.10">
+  <world name="world_with_light">
+
+    <!-- Physics — same as before -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Required system plugins -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+
+    <!-- ======================================================
+         LIGHT — Directional (Sun)
+         A directional light simulates a distant light source
+         like the sun. Its rays are parallel — no origin point.
+
+         type options:
+           "directional" → like the sun, parallel rays
+           "point"       → like a light bulb, all directions
+           "spot"        → like a flashlight, cone shape
+
+         <cast_shadows>  → should this light cast shadows?
+         <pose>          → position and direction of the light
+         <diffuse>       → main color of the light (R G B Alpha)
+         <specular>      → highlight/reflection color
+         <direction>     → which way the light rays point
+                           -0.5 0.1 -0.9 = slightly off-axis
+                           pointing mostly downward
+
+         <attenuation>   → how the light fades over distance
+           <range>       → maximum reach of the light
+           <constant>    → base attenuation (1=none, 0=full)
+           <linear>      → fades linearly with distance
+           <quadratic>   → fades with square of distance
+    ====================================================== -->
+    <!-- Sun visual: glowing sphere so the sun appears in the viewport.
+         The <light> tag alone only creates an invisible indicator.
+         <emissive> makes this sphere glow regardless of scene lighting. -->
+    <model name="sun_visual">
+      <static>true</static>
+      <pose>0 0 10 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <sphere>
+              <radius>0.5</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.5 1</ambient>
+            <diffuse>1.0 1.0 0.5 1</diffuse>
+            <specular>1.0 1.0 1.0 1</specular>
+            <emissive>1.0 1.0 0.5 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- ======================================================
+         GROUND PLANE — Static Model
+         The ground plane is just a model with a flat surface.
+
+         KEY CONCEPT — <static>true</static>
+         A static model is NOT affected by physics.
+         - It won't fall due to gravity
+         - It won't move when hit by other objects
+         - It does NOT need an <inertial> tag
+         - Great for fixed environment objects: ground, walls, buildings
+
+         KEY CONCEPT — <visual> vs <collision>
+         <visual>    → what you SEE in the GUI (rendered mesh)
+         <collision> → what the physics engine uses for contact
+
+         They can be different shapes! In practice:
+         - Use simple collision shapes (box, sphere) for performance
+         - Use detailed meshes for visual only
+
+         For the ground plane:
+         - <visual> has a SIZE (100x100) for rendering
+         - <collision> uses the default infinite plane
+           so objects never "fall off the edge"
+
+         <normal>0 0 1</normal> means the plane faces UP (Z axis)
+    ====================================================== -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+
+        <!-- Collision: infinite flat plane, normal pointing up -->
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+            </plane>
+          </geometry>
+        </collision>
+
+        <!-- Visual: finite sized plane so we can see it -->
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <!-- Material: how the surface looks -->
+          <!-- ambient  = color in shadow -->
+          <!-- diffuse  = main lit color   -->
+          <!-- specular = highlight color  -->
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+
+      </link>
+    </model>
+
+    <!-- ======================================================
+         COMPARISON: Try commenting out the <collision> tag
+         inside the ground plane and run again. Drop a box on it.
+         You'll see the box fall through — that's why collision
+         and visual are separate concepts.
+    ====================================================== -->
+
+  </world>
+</sdf>

@@ -1,0 +1,238 @@
+<?xml version="1.0" ?>
+<!--
+  ============================================================
+  WORLD 04 — Joints and External Models
+  ============================================================
+  New concepts introduced here:
+    - <joint>   → connecting two links together
+    - <include> → loading a model from Gazebo Fuel
+
+  Run with:
+    gz sim 04_joints_and_include.sdf
+
+  While running:
+    gz model --list
+    gz model -m simple_arm --info
+  ============================================================
+-->
+<sdf version="1.10">
+  <world name="joints_and_include">
+
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+
+    <!-- Sun -->
+    <model name="sun_visual">
+      <static>true</static>
+      <pose>0 0 10 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <sphere><radius>0.5</radius></sphere>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.5 1</ambient>
+            <diffuse>1.0 1.0 0.5 1</diffuse>
+            <specular>1.0 1.0 1.0 1</specular>
+            <emissive>1.0 1.0 0.5 1</emissive>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground Plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane><normal>0 0 1</normal></plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.6 0.6 0.6 1</ambient>
+            <diffuse>0.6 0.6 0.6 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ======================================================
+         JOINTS — Connecting Two Links
+         ======================================================
+         A model can have multiple links connected by joints.
+         A joint defines:
+           - type     → how the links move relative to each other
+           - parent   → the fixed/base link
+           - child    → the link that moves
+           - axis     → the direction of movement or rotation
+
+         Joint types:
+           revolute  → rotates around 1 axis (like a hinge)
+           prismatic → slides along 1 axis (like a piston)
+           fixed     → no movement, rigidly connected
+           ball      → 3 rotational degrees of freedom
+
+         This example: a simple 2-link arm
+           - base_link  → fixed to the ground (static-like behavior)
+           - arm_link   → connected to base via a revolute joint
+                          it can rotate around the Z axis
+
+         IMPORTANT: The joint pose is relative to the CHILD link.
+         The axis is defined in the MODEL frame.
+    ====================================================== -->
+    <model name="simple_arm">
+      <pose>5 0 0 0 0 0</pose>
+
+      <!-- Link 1: Base — the fixed bottom part -->
+      <link name="base_link">
+        <pose>0 0 0.5 0 0 0</pose>
+        <inertial>
+          <mass>5.0</mass>
+          <inertia>
+            <ixx>0.1</ixx><ixy>0</ixy><ixz>0</ixz>
+            <iyy>0.1</iyy><iyz>0</iyz>
+            <izz>0.1</izz>
+          </inertia>
+        </inertial>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.4 0.4 1.0</size></box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.8 1</ambient>
+            <diffuse>0.3 0.3 0.8 1</diffuse>
+            <specular>0.1 0.1 0.3 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box><size>0.4 0.4 1.0</size></box>
+          </geometry>
+        </collision>
+      </link>
+
+      <!-- Link 2: Arm — the part that rotates -->
+      <link name="arm_link">
+        <!--
+          arm_link sits on top of base_link.
+          base_link top = Z 0.5 + 0.5 = 1.0
+          arm_link center = 1.0 + 0.6 = 1.6 (length=1.2, half=0.6)
+        -->
+        <pose>0 0 1.6 0 0 0</pose>
+        <inertial>
+          <mass>1.0</mass>
+          <inertia>
+            <ixx>0.02</ixx><ixy>0</ixy><ixz>0</ixz>
+            <iyy>0.1</iyy><iyz>0</iyz>
+            <izz>0.1</izz>
+          </inertia>
+        </inertial>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.1</radius>
+              <length>1.2</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.8 0.3 0.1 1</ambient>
+            <diffuse>0.8 0.3 0.1 1</diffuse>
+            <specular>0.3 0.1 0.0 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.1</radius>
+              <length>1.2</length>
+            </cylinder>
+          </geometry>
+        </collision>
+      </link>
+
+      <!-- ====================================================
+           JOINT — revolute (hinge)
+           Connects base_link (parent) to arm_link (child).
+           Rotates around the Z axis → spins horizontally.
+           Limits: -180 to +180 degrees (in radians).
+      ==================================================== -->
+      <joint name="arm_joint" type="revolute">
+        <!-- Joint pose is at the connection point, relative to child -->
+        <pose relative_to="arm_link">0 0 -0.6 0 0 0</pose>
+        <parent>base_link</parent>
+        <child>arm_link</child>
+        <axis>
+          <!-- Rotation axis: Z = spins horizontally -->
+          <xyz expressed_in="__model__">0 0 1</xyz>
+          <limit>
+            <lower>-3.1416</lower>  <!-- -180 degrees -->
+            <upper>3.1416</upper>   <!--  180 degrees -->
+          </limit>
+        </axis>
+      </joint>
+
+      <!-- Fix the base to the world so it doesn't fall -->
+      <joint name="base_to_world" type="fixed">
+        <parent>world</parent>
+        <child>base_link</child>
+      </joint>
+
+    </model>
+
+    <!-- ======================================================
+         INCLUDE — Loading a Model from Gazebo Fuel
+         ======================================================
+         Instead of defining every object from scratch,
+         you can load ready-made models from Gazebo Fuel:
+           https://app.gazebosim.org/fuel
+
+         <uri>  → the full Fuel URL of the model
+         <name> → the name this instance will have in the world
+         <pose> → where to place it
+
+         The model is downloaded on first run and cached locally.
+         No internet needed after the first download.
+
+         NOTE: If you have multiple instances of the same model,
+         each must have a different <name>.
+    ====================================================== -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Coke</uri>
+      <name>coke_can</name>
+      <pose>-3 0 0 0 0 0</pose>
+    </include>
+
+  </world>
+</sdf>

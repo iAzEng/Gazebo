@@ -1,0 +1,154 @@
+<?xml version="1.0" ?>
+<!--
+  ============================================================
+  fuel_world.sdf — Session 03
+  ============================================================
+  A PX4-compatible world that includes a model downloaded
+  from Gazebo Fuel and placed in the PX4 models directory.
+
+  IMPORTANT: This world is structured for PX4 integration.
+  Unlike Session 1 worlds, it has NO explicit plugin tags.
+  Plugins are loaded automatically from server.config via
+  the GZ_SIM_SERVER_CONFIG_PATH environment variable.
+
+  Before running this world:
+    1. Download the Construction Cone model:
+         gz fuel download -u "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Construction Cone" -v 4
+    2. Check the version number, then copy to PX4 models directory:
+         ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/construction\ cone/
+         mkdir -p /home/az/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone
+         cp -r ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/construction\ cone/3/. \
+               /home/az/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/
+
+  One-time setup — copy this file to PX4's worlds directory:
+    cp /home/az/Videos/Session_3/worlds/fuel_world.sdf \
+       /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
+
+  Run with:
+    Terminal 1 (-r auto-starts the world; the three exports configure Gazebo for PX4):
+      export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
+      export GZ_SIM_SERVER_CONFIG_PATH=/home/az/.simulation-gazebo/server.config
+      export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+      gz sim -r /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
+
+    Terminal 2 (only after Terminal 1 shows the Gazebo world is running):
+      cd ~/PX4-Autopilot
+      PX4_GZ_STANDALONE=1 PX4_GZ_WORLD=fuel_world make px4_sitl gz_x500
+  ============================================================
+-->
+<sdf version="1.9">
+  <world name="fuel_world">
+
+    <!-- Physics — matches PX4 default worlds.
+         type="ode" with update_rate=250 is required for stable drone simulation. -->
+    <physics type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+
+    <!-- Required by PX4 sensor plugins loaded via server.config:
+         gravity     → physics and IMU
+         magnetic_field → magnetometer sensor
+         atmosphere  → air pressure / barometer sensor -->
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type="adiabatic"/>
+
+    <!-- GPS home position.
+         Required by the NavSat/GPS sensor to set up the ENU reference frame.
+         Without this block, PX4 cannot initialize GPS and standalone mode fails. -->
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>47.397971057728974</latitude_deg>
+      <longitude_deg>8.546163739800146</longitude_deg>
+      <elevation>0</elevation>
+    </spherical_coordinates>
+
+    <!-- Sun light -->
+    <light name="sunUTC" type="directional">
+      <pose>0 0 500 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>0.001 0.625 -0.78</direction>
+      <diffuse>0.904 0.904 0.904 1</diffuse>
+      <specular>0.271 0.271 0.271 1</specular>
+      <attenuation>
+        <range>2000</range>
+        <linear>0</linear>
+        <constant>1</constant>
+        <quadratic>0</quadratic>
+      </attenuation>
+    </light>
+
+    <!-- Ground plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>1 1</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction><ode/></friction>
+            <bounce/>
+            <contact/>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>500 500</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ======================================================
+         FUEL MODEL — Construction Cone
+         ======================================================
+         This model was downloaded from Gazebo Fuel and placed
+         in the PX4 models directory. It is referenced here
+         using model:// which resolves via GZ_SIM_RESOURCE_PATH.
+
+         <uri>model://Construction_Cone</uri>
+           → Gazebo searches GZ_SIM_RESOURCE_PATH for a folder
+             named exactly "Construction_Cone"
+           → Finds: /home/az/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/
+
+         <name> → the instance name in this world (can be anything)
+         <pose> → where to place it (X Y Z Roll Pitch Yaw)
+    ====================================================== -->
+    <include>
+      <uri>model://Construction_Cone</uri>
+      <name>cone_1</name>
+      <pose>10 0 0 0 0 0</pose>
+    </include>
+
+    <!--
+      TIP: You can include multiple instances of the same model
+      with different names and poses:
+
+      <include>
+        <uri>model://Construction_Cone</uri>
+        <name>cone_2</name>
+        <pose>10 5 0 0 0 0</pose>
+      </include>
+
+      TIP: You can also mix locally-placed models with
+      Fuel-downloaded models in the same world.
+    -->
+
+  </world>
+</sdf>
