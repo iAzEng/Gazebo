@@ -411,7 +411,7 @@ The `<world name='...'>` attribute must equal the filename without the `.sdf` ex
 
 **Why:** PX4 builds every Gazebo topic and service path as `/world/<name>/...`. In standalone mode you pass the world name via `PX4_GZ_WORLD=<name>`. If the attribute does not match, all topic subscriptions fail silently.
 
-#### 2. Remove all `<plugin>` tags
+#### 2. Remove all `<plugin>` tags (if you will use Standalone mode, otherwise do not remove it)
 
 ```xml
 <!-- Before — delete every block like this: -->
