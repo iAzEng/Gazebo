@@ -84,7 +84,7 @@ PX4_GZ_WORLD=baylands make px4_sitl gz_x500
 PX4_GZ_MODEL_POSE="0,0,0.1,0,0,0" make px4_sitl gz_x500
 
 # Set home GPS location
-PX4_HOME_LAT=24.7136 PX4_HOME_LON=4/.gz/fuel/fuel.gazebosim.org/openrobotics/models/construction\ cone6.6753 PX4_HOME_ALT=612 make px4_sitl gz_x500
+PX4_HOME_LAT=24.7136 PX4_HOME_LON=46.6753 PX4_HOME_ALT=612 make px4_sitl gz_x500
 
 # Run faster than real time (2x speed)
 PX4_SIM_SPEED_FACTOR=2 make px4_sitl gz_x500
