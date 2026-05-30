@@ -267,12 +267,12 @@ The drone spawns in the world alongside the Construction Cone model.
 
 Go to [https://app.gazebosim.org/fuel/worlds](https://app.gazebosim.org/fuel/worlds)
 
-We will use the **Depot** world by OpenRobotics.
+We will use the **husky_depot** world by MovAi.
 
 #### Step 2 — Download the world
 
 ```bash
-gz fuel download -u https://fuel.gazebosim.org/1.0/OpenRobotics/worlds/Depot -v 4
+gz fuel download -u https://fuel.gazebosim.org/1.0/MovAi/worlds/husky_depot -v 4
 ```
 
 #### Step 3 — Inspect it
@@ -280,19 +280,19 @@ gz fuel download -u https://fuel.gazebosim.org/1.0/OpenRobotics/worlds/Depot -v 
 Fuel stores world names lowercase. Check the version number first (it may not be `1`):
 
 ```bash
-ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/
+ls ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/
 ```
 
 Then inspect using the actual version number (replace `1` if yours differs):
 
 ```bash
-ls ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/
-cat ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/*.sdf
+ls ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/
+cat ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/*.sdf
 ```
 
 Check what models it includes:
 ```bash
-grep -i "fuel.gazebosim.org" ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/*.sdf
+grep -i "fuel.gazebosim.org" ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/*.sdf
 ```
 
 Any `<include>` with a Fuel URI will auto-download on first run.
@@ -304,11 +304,11 @@ The world name inside the SDF must match the filename stem and must match `PX4_G
 ```bash
 # Check what <world name='...'> is set to inside the downloaded file
 # (replace /1/ with your actual version number from Step 3)
-grep "world name" ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/depot.sdf
+grep "world name" ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/*.sdf
 
 # Copy to PX4 worlds directory — filename must match the world name attribute
-cp ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/depot.sdf \
-   /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/depot.sdf
+cp ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/*.sdf \
+   /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/husky_depot.sdf
 ```
 
 > ⚠️ Downloaded Fuel worlds often need the PX4 compatibility fixes described in the [Making Any Gazebo World Work with PX4](#-making-any-gazebo-world-work-with-px4) section below before they will run with the drone.
@@ -320,12 +320,12 @@ cp ~/.gz/fuel/fuel.gazebosim.org/openrobotics/worlds/depot/1/depot.sdf \
 export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
 export GZ_SIM_SERVER_CONFIG_PATH=/home/az/.simulation-gazebo/server.config
 export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
-gz sim -r /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/depot.sdf
+gz sim -r /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/husky_depot.sdf
 
 # Terminal 2 (after Terminal 1 shows the world is running)
-# Replace "depot" with the actual world name you found in Step 4
+# Replace "husky_depot" with the actual world name you found in Step 4
 cd ~/PX4-Autopilot
-PX4_GZ_STANDALONE=1 PX4_GZ_WORLD=depot make px4_sitl gz_x500
+PX4_GZ_STANDALONE=1 PX4_GZ_WORLD=husky_depot make px4_sitl gz_x500
 ```
 
 ---
