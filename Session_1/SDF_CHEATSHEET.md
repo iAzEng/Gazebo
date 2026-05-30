@@ -213,7 +213,7 @@ gz model -m MODEL_NAME --info
 
 ---
 
-## Include an External Model
+## Include an External Model (will be explained in detailes at Session_3)
 
 **From Gazebo Fuel (online):**
 ```xml
