@@ -125,21 +125,8 @@ A joint connects two links inside a model. It defines how they move relative to 
 
 When you open a PX4 drone SDF you will see revolute joints connecting each rotor to the body — now you know what they mean.
 
-### 7. Including External Models (Gazebo Fuel)
 
-Instead of building every object from scratch, you can pull ready-made models from [Gazebo Fuel](https://app.gazebosim.org/fuel):
-
-```xml
-<include>
-  <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Coke</uri>
-  <name>coke_can</name>
-  <pose>-3 0 0 0 0 0</pose>
-</include>
-```
-
-The model downloads on first run and is cached locally. Multiple instances of the same model must each have a different `<name>`.
-
-### 8. The gz CLI — Your Debugging Tool
+### 7. The gz CLI — Your Debugging Tool
 
 The `gz` command-line tool is essential for inspecting and interacting with a running simulation.
 
