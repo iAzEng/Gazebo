@@ -93,6 +93,12 @@
               <normal>0 0 1</normal>
             </plane>
           </geometry>
+          <surface>
+    	       <bounce>
+      		    <restitution_coefficient>1.0</restitution_coefficient>
+      		    <threshold>0.01</threshold>
+   	         </bounce>
+  	 </surface>
         </collision>
         <visual name="visual">
           <geometry>
@@ -352,6 +358,12 @@
           </material>
         </visual>
         <collision name="collision">
+          <surface>
+    	     <bounce>
+      	  	<restitution_coefficient>0.8</restitution_coefficient>
+      	  	<threshold>0.01</threshold>
+   	      </bounce>
+      	 </surface>
           <geometry>
             <sphere>
               <radius>0.3</radius>
