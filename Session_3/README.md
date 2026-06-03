@@ -116,7 +116,6 @@ source ~/.bashrc
 
 | Element | Session 1 (standalone Gazebo) | Session 3+ (PX4-integrated) |
 |---------|------------------------------|----------------------------|
-| Explicit `<plugin>` tags | Required (Physics, UserCommands, SceneBroadcaster) | **Must NOT be present** — loaded from `server.config` instead. Duplicating them causes physics to fail. |
 | `<gravity>` | Optional | Required — needed by IMU and physics |
 | `<magnetic_field>` | Not used | Required — needed by magnetometer sensor |
 | `<atmosphere>` | Not used | Required — needed by barometer sensor |
