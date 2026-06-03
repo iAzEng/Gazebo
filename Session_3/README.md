@@ -53,7 +53,7 @@ Download with `gz fuel download`, copy to PX4 models directory, reference by fol
 ### 3. PX4 Directory Structure
 
 ```
-/home/az/PX4-Autopilot/Tools/simulation/gz/
+/home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/
 ├── worlds/        ← world .sdf files go here
 └── models/        ← model folders go here
 ```
@@ -101,12 +101,12 @@ Owner and model names are stored **lowercase** in the cache. The version number 
 Tells Gazebo where to search for models when it encounters `model://ModelName` in an SDF file.
 
 ```bash
-export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
+export GZ_SIM_RESOURCE_PATH=/home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models
 ```
 
 Add permanently to `~/.bashrc` if not done already:
 ```bash
-echo 'export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models' >> ~/.bashrc
+echo 'export GZ_SIM_RESOURCE_PATH=/home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models' >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -133,7 +133,7 @@ Without `-r`, Gazebo starts paused. PX4 waits for the world clock to tick — wh
 All plugins (Physics, SceneBroadcaster, IMU, GPS, barometer, magnetometer) must come from `server.config`, not from the SDF. If the SDF has explicit plugins AND `server.config` loads the same plugins, they load twice and physics breaks silently.
 
 ```bash
-export GZ_SIM_SERVER_CONFIG_PATH=/home/az/.simulation-gazebo/server.config
+export GZ_SIM_SERVER_CONFIG_PATH=/home/YOUR_NAME/.simulation-gazebo/server.config
 ```
 
 **Requirement 4 — Set `PX4_GZ_WORLD` to match the `<world name='...'>` attribute.**
@@ -147,7 +147,7 @@ PX4_GZ_STANDALONE=1 PX4_GZ_WORLD=fuel_world make px4_sitl gz_x500
 `server.config` references two optional PX4 camera plugins. Gazebo cannot find them without this path — it logs errors but continues. Set this to eliminate the noise:
 
 ```bash
-export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/YOUR_NAME/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
 ```
 
 The `~/.simulation-gazebo/` directory is created by running the PX4 `simulation-gazebo` setup script. If it does not exist:
@@ -208,23 +208,23 @@ We rename the folder using an underscore so it can be used as a `model://` URI w
 Use the version number you found in Step 2 (replace `3` if yours was different):
 
 ```bash
-mkdir -p /home/az/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone
+mkdir -p /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone
 cp -r ~/.gz/fuel/fuel.gazebosim.org/openrobotics/models/construction\ cone/3/. \
-      /home/az/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/
+      /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/
 ```
 
 Note the `3/.` — this copies the **contents** of the version folder, not the folder itself. Replace `3` with the actual version number from Step 2.
 
 Verify structure:
 ```bash
-ls /home/az/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/
+ls /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/
 # Expected: model.config  model.sdf  meshes/
 ```
 
 #### Step 4 — Inspect the model SDF
 
 ```bash
-cat /home/az/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/model.sdf
+cat /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models/Construction_Cone/model.sdf
 ```
 
 Identify the links, visuals, and collision shapes — same structure as Session 1.
@@ -234,18 +234,18 @@ Identify the links, visuals, and collision shapes — same structure as Session 
 First, copy the world file into PX4's worlds directory (one-time setup):
 
 ```bash
-cp /home/az/Videos/Session_3/worlds/fuel_world.sdf \
-   /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
+cp /home/YOUR_NAME/Videos/Session_3/worlds/fuel_world.sdf \
+   /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
 ```
 
 Then launch in two terminals:
 
 ```bash
 # Terminal 1
-export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
-export GZ_SIM_SERVER_CONFIG_PATH=/home/az/.simulation-gazebo/server.config
-export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
-gz sim -r /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
+export GZ_SIM_RESOURCE_PATH=/home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models
+export GZ_SIM_SERVER_CONFIG_PATH=/home/YOUR_NAME/.simulation-gazebo/server.config
+export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/YOUR_NAME/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+gz sim -r /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/worlds/fuel_world.sdf
 ```
 
 Wait until the Gazebo window is showing the world, then start Terminal 2:
@@ -308,7 +308,7 @@ grep "world name" ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/*.sdf
 
 # Copy to PX4 worlds directory — filename must match the world name attribute
 cp ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/*.sdf \
-   /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/husky_depot.sdf
+   /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/worlds/husky_depot.sdf
 ```
 
 > ⚠️ Downloaded Fuel worlds often need the PX4 compatibility fixes described in the [Making Any Gazebo World Work with PX4](#-making-any-gazebo-world-work-with-px4) section below before they will run with the drone.
@@ -317,10 +317,10 @@ cp ~/.gz/fuel/fuel.gazebosim.org/movai/worlds/husky_depot/1/*.sdf \
 
 ```bash
 # Terminal 1
-export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
-export GZ_SIM_SERVER_CONFIG_PATH=/home/az/.simulation-gazebo/server.config
-export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
-gz sim -r /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/husky_depot.sdf
+export GZ_SIM_RESOURCE_PATH=/home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models
+export GZ_SIM_SERVER_CONFIG_PATH=/home/YOUR_NAME/.simulation-gazebo/server.config
+export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/YOUR_NAME/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+gz sim -r /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/worlds/husky_depot.sdf
 
 # Terminal 2 (after Terminal 1 shows the world is running)
 # Replace "husky_depot" with the actual world name you found in Step 4
@@ -374,7 +374,7 @@ PX4_GZ_STANDALONE=1 PX4_GZ_WORLD=husky_depot make px4_sitl gz_x500
 - `libOpticalFlowSystem.so` is used only with optical-flow targets (e.g. `gz_x500_flow`); `libGstCameraSystem.so` is used only when a GStreamer camera model is spawned — neither is needed for basic X500 flight
 - To silence them, add to Terminal 1 (requires PX4 to have been built at least once):
   ```bash
-  export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+  export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/YOUR_NAME/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
   ```
 
 ---
@@ -472,9 +472,9 @@ The `<world name='...'>` attribute must equal the filename without the `.sdf` ex
 #### 6. Set the three environment variables before launching
 
 ```bash
-export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
-export GZ_SIM_SERVER_CONFIG_PATH=/home/az/.simulation-gazebo/server.config
-export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+export GZ_SIM_RESOURCE_PATH=/home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/models
+export GZ_SIM_SERVER_CONFIG_PATH=/home/YOUR_NAME/.simulation-gazebo/server.config
+export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/YOUR_NAME/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
 ```
 
 - `GZ_SIM_RESOURCE_PATH` — resolves `model://` URIs in `<include>` blocks
@@ -485,7 +485,7 @@ export GZ_SIM_SYSTEM_PLUGIN_PATH=/home/az/PX4-Autopilot/build/px4_sitl_default/s
 
 ```bash
 # Terminal 1
-gz sim -r /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/my_world.sdf
+gz sim -r /home/YOUR_NAME/PX4-Autopilot/Tools/simulation/gz/worlds/my_world.sdf
 
 # Terminal 2 (only after Gazebo window is visible)
 # PX4_GZ_WORLD must match the <world name='...'> value inside the SDF
