@@ -131,7 +131,7 @@ python3 ~/simulation-gazebo --world default
 **Terminal 2 — Start PX4 and connect to running Gazebo:**
 ```bash
 cd ~/PX4-Autopilot
-PX4_GZ_STANDALONE=1 make px4_sitl gz_x500
+PX4_GZ_STANDALONE=1 PX4_GZ_WORLD=default make px4_sitl gz_x500
 ```
 
 ### 6. QGroundControl Connection
