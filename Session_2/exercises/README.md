@@ -69,14 +69,13 @@ Start Gazebo and PX4 separately:
 
 **Terminal 1:**
 ```bash
-export GZ_SIM_RESOURCE_PATH=/home/az/PX4-Autopilot/Tools/simulation/gz/models
-gz sim /home/az/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+python3 ~/simulation-gazebo --world RUNNING_WORLD_NAME
 ```
 
 **Terminal 2:**
 ```bash
 cd ~/PX4-Autopilot
-PX4_GZ_STANDALONE=1 make px4_sitl gz_x500
+PX4_GZ_STANDALONE=1 make px4_sitl gz_x500_RunningWorldName
 ```
 
 - [ ] Does the drone appear in the already-running Gazebo instance?
