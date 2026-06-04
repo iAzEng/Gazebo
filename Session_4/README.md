@@ -127,7 +127,7 @@ Blender is free and available at [blender.org](https://www.blender.org/).
 ## 📂 Files in This Session
 
 ```
-gaz/
+Session_4/
 ├── README.md
 ├── worlds/
 │   └── external_world.sdf     ← PX4-compatible world with an imported mesh model
