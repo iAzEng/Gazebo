@@ -383,51 +383,55 @@ All three must be in the **same folder** in `meshes/` — if any piece is missin
 3. Extract the zip — you get something like:
 
 ```
-sea_keep_lonely_watcher/
+car_scene/
 ├── scene.gltf
 ├── scene.bin
+├── license.txt
 └── textures/
-    ├── baseColor.jpg
-    └── normal.jpg
+    ├── body_baseColor.png
+    ├── body_metallicRoughness.png
+    ├── glass_baseColor.png
+    └── ...
 ```
 
 ##### Step 2 — Create the model folder manually
 
 ```
 PX4-Autopilot/Tools/simulation/gz/models/
-└── sea_keep/
+└── car_scene/
     ├── model.config
     ├── model.sdf
     └── meshes/
         ├── scene.gltf       ← scene description
         ├── scene.bin        ← geometry buffer (same name as .gltf)
         └── textures/        ← texture images referenced from scene.gltf
-            ├── baseColor.jpg
-            └── normal.jpg
+            ├── body_baseColor.png
+            ├── body_metallicRoughness.png
+            └── ...
 ```
 
 ```bash
-mkdir -p ~/PX4-Autopilot/Tools/simulation/gz/models/sea_keep/meshes
+mkdir -p ~/PX4-Autopilot/Tools/simulation/gz/models/car_scene/meshes
 
-cp /path/to/sea_keep_lonely_watcher/scene.gltf \
-   ~/PX4-Autopilot/Tools/simulation/gz/models/sea_keep/meshes/
+cp /path/to/car_scene/scene.gltf \
+   ~/PX4-Autopilot/Tools/simulation/gz/models/car_scene/meshes/
 
-cp /path/to/sea_keep_lonely_watcher/scene.bin \
-   ~/PX4-Autopilot/Tools/simulation/gz/models/sea_keep/meshes/
+cp /path/to/car_scene/scene.bin \
+   ~/PX4-Autopilot/Tools/simulation/gz/models/car_scene/meshes/
 
-cp -r /path/to/sea_keep_lonely_watcher/textures \
-      ~/PX4-Autopilot/Tools/simulation/gz/models/sea_keep/meshes/textures
+cp -r /path/to/car_scene/textures \
+      ~/PX4-Autopilot/Tools/simulation/gz/models/car_scene/meshes/textures
 ```
 
-> **Why do all three need to be together?** The `scene.gltf` references the binary buffer as `"scene.bin"` and the textures as `"textures/baseColor.jpg"` — both are **relative paths**. If you move the `.gltf` without the other files, Gazebo cannot find them.
+> **Why do all three need to be together?** The `scene.gltf` references the binary buffer as `"scene.bin"` and the textures as `"textures/body_baseColor.png"` — both are **relative paths**. If you move the `.gltf` without the other files, Gazebo cannot find them.
 
 ##### Step 3 — Create model.config
 
 ```bash
-cat > ~/PX4-Autopilot/Tools/simulation/gz/models/sea_keep/model.config << 'EOF'
+cat > ~/PX4-Autopilot/Tools/simulation/gz/models/car_scene/model.config << 'EOF'
 <?xml version="1.0"?>
 <model>
-  <name>sea_keep</name>
+  <name>car_scene</name>
   <version>1.0</version>
   <sdf version="1.10">model.sdf</sdf>
   <description>Imported GLTF model</description>
@@ -442,7 +446,7 @@ GLTF also uses Y-up coordinates — the same `<pose>` fix applies:
 ```xml
 <?xml version="1.0" ?>
 <sdf version="1.10">
-  <model name="sea_keep">
+  <model name="car_scene">
     <static>true</static>
     <link name="link">
 
@@ -452,7 +456,7 @@ GLTF also uses Y-up coordinates — the same `<pose>` fix applies:
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://sea_keep/meshes/scene.gltf</uri>
+            <uri>model://car_scene/meshes/scene.gltf</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -473,8 +477,8 @@ GLTF also uses Y-up coordinates — the same `<pose>` fix applies:
 
 ```xml
 <include>
-  <uri>model://sea_keep</uri>
-  <name>sea_keep_1</name>
+  <uri>model://car_scene</uri>
+  <name>car_scene_1</name>
   <pose>20 0 0 0 0 0</pose>
 </include>
 ```
@@ -572,7 +576,7 @@ gz sim -r ~/PX4-Autopilot/Tools/simulation/gz/worlds/external_world.sdf
 > ```bash
 > bash scripts/import_asset.sh my_container ~/Downloads/container.stl 1
 > bash scripts/import_asset.sh my_car       ~/Downloads/model.glb 1
-> bash scripts/import_asset.sh sea_keep     ~/Downloads/sea_keep/scene.gltf 1
+> bash scripts/import_asset.sh car_scene    ~/Downloads/car_scene/scene.gltf 1
 > ```
 
 ---
