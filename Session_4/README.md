@@ -138,11 +138,12 @@ Blender is free and available at [blender.org](https://www.blender.org/).
 ## 📂 Files in This Session
 
 ```
-gaz/
+Session_4/
 ├── README.md
 ├── worlds/
 │   └── external_world.sdf     ← PX4-compatible world with an imported mesh model
 ├── scripts/
+│   └── convert_to_glb.py      ← helper: convert .dae and .obj to .glb
 │   └── import_asset.sh        ← helper: creates model folder + generates SDF templates
 └── exercises/
     └── README.md
