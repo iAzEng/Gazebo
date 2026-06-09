@@ -25,11 +25,6 @@ By the end of this session you will be able to:
 | STL | `.stl` | ❌ | ❌ | Geometry only — simplest to import |
 | FBX | `.fbx` | — | — | **Not supported** — convert to `.glb` via Blender |
 
-**Rule of thumb:** Always use `.glb` in Gazebo Harmonic — it is the only format that reliably loads with textures. Workflow:
-- Sketchfab: download as **"Autoconverted format (GLTF)"** → gives `.glb`
-- If you only have `.obj` or `.dae`: run `import_asset.sh` which **auto-converts to .glb** via `convert_to_glb.py`
-- Convert `.fbx` with Blender → File → Export → glTF 2.0 (choose .glb)
-
 > ⚠️ **Why .dae and .obj fail in Gazebo Harmonic:**
 > - **`.dae`** → Gazebo's COLLADA loader crashes (`LoadPolylist → parseInt → segfault`)
 > - **`.obj`** → Both the native loader and assimp silently drop textures; model appears white
@@ -689,6 +684,11 @@ The `import_asset.sh` script now does this automatically — it converts .obj an
 - Run `gz sdf -k model.sdf` to see the exact line
 
 ---
+
+**Rule of thumb:** Always use `.glb` in Gazebo Harmonic — it is the only format that reliably loads with textures. Workflow:
+- Sketchfab: download as **"Autoconverted format (GLTF)"** → gives `.glb`
+- If you only have `.obj` or `.dae`: run `import_asset.sh` which **auto-converts to .glb** via `convert_to_glb.py`
+- Convert `.fbx` with Blender → File → Export → glTF 2.0 (choose .glb)
 
 ## 🔗 References
 
